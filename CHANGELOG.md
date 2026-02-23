@@ -1,3 +1,12 @@
+## [2.2.1](https://github.com/Hydra-Network/Bromine/compare/v2.2.0...v2.2.1) (2026-02-23)
+
+
+### Bug Fixes
+
+* wisp ([d81f5e8](https://github.com/Hydra-Network/Bromine/commit/d81f5e8deeaaf9b774b8643e237ce63893406a80))
+
+
+
 # [2.2.0](https://github.com/Hydra-Network/Bromine/compare/v1.1.0...v2.2.0) (2026-02-14)
 
 
