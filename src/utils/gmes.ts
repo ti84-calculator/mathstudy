@@ -20,7 +20,7 @@ const gmes_text = FILTER_OPTIMIZE_ON ? "gᾰmes" : "games";
 
 	// --- Infinite Scroll State ---
 	let currentPage = 1;
-	const itemsPerPage = 30;
+	const itemsPerPage = 25;
 	let currentFilteredGmes = [];
 	let observer = null;
 
@@ -99,6 +99,7 @@ const gmes_text = FILTER_OPTIMIZE_ON ? "gᾰmes" : "games";
 
 
 	const renderNextBatch = () => {
+		if ((currentPage - 1) * itemsPerPage >= currentFilteredGmes.length) return;
 		const startIndex = (currentPage - 1) * itemsPerPage;
 		const endIndex = startIndex + itemsPerPage;
 		const batch = currentFilteredGmes.slice(startIndex, endIndex);
@@ -109,15 +110,27 @@ const gmes_text = FILTER_OPTIMIZE_ON ? "gᾰmes" : "games";
 		}
 
 		const container = target.querySelector(".gme-grid");
+		if (!container) return;
 		container.insertAdjacentHTML(
 			"beforeend",
 			batch.map(createGmeCard).join(""),
 		);
 
 		if (endIndex >= currentFilteredGmes.length) {
-			if (observer) observer.disconnect();
 			const sentinel = document.getElementById("infinite-sentinel");
 			if (sentinel) sentinel.style.display = "none";
+		}
+	};
+
+	const fillViewport = () => {
+		const sentinel = document.getElementById("infinite-sentinel");
+		while (
+			sentinel &&
+			sentinel.getBoundingClientRect().top < window.innerHeight + 400 &&
+			(currentPage - 1) * itemsPerPage < currentFilteredGmes.length
+		) {
+			renderNextBatch();
+			currentPage++;
 		}
 	};
 
@@ -131,19 +144,20 @@ const gmes_text = FILTER_OPTIMIZE_ON ? "gᾰmes" : "games";
 
 		const sentinel = document.getElementById("infinite-sentinel");
 
+		fillViewport();
+
 		observer = new IntersectionObserver(
 			(entries) => {
 				if (entries[0].isIntersecting) {
-					renderNextBatch();
-					currentPage++;
+					fillViewport();
 				}
 			},
 			{
-				rootMargin: "200px",
+				rootMargin: "400px",
 			},
 		);
 
-		observer.observe(sentinel);
+		if (sentinel) observer.observe(sentinel);
 	};
 
 	searchInput.addEventListener("input", (event) => {
